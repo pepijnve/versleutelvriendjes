@@ -1,1 +1,2 @@
-pub mod hex2b64;
+pub mod base64;
+pub mod hex;

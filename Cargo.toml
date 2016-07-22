@@ -1,6 +1,6 @@
 [package]
 name = "versleutelvriendjes"
 version = "0.1.0"
-authors = ["vincent <vincent@singlespeak.org>"]
+authors = ["vincent <vincent@singlespeak.org>", "Pepijn Van Eeckhoudt <pepijn@vaneeckhoudt.net>"]
 
 [dependencies]
