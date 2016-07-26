@@ -1,6 +1,6 @@
 extern crate versleutelvriendjes;
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use versleutelvriendjes::charfreq::*;
 
@@ -9,7 +9,7 @@ fn char_freq() {
     let text = "aababcabcdabcdeabcdef";
     let map = build_char_freq_map(&text);
 
-    let mut expected = HashMap::new();
+    let mut expected = BTreeMap::new();
     for c in 'a' as u8 .. 'z' as u8 + 1 {
         expected.insert(c as char, 0);
     }
@@ -21,4 +21,13 @@ fn char_freq() {
     expected.insert('f', 1);
 
     assert_eq!(expected, map);
+}
+
+#[test]
+fn char_freq2() {
+    let input = "uu~<0dguu<0tbyuyuyuyuyuyuyuyuyuyuyuyuyuyu";
+    let actual = build_freq_order_string(&build_char_freq_map(&input));
+    let expected = "uybdgtacefhijklmnopqrsvwxz";
+
+    assert_eq!(expected, actual)
 }

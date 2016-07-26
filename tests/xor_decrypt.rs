@@ -27,8 +27,33 @@ fn challenge2() {
     assert_eq!( decoded, expected );
 }
 
+#[test]
+fn challenge3() {
+    let decoded = decode("f4f4ffbdb1e5e6f4f4bdb1f5e3f8f4f8f4f8f4f8f4f8f4f8f4f8f4f8f4f8f4f8f4f8f4f8f4f8f4f8f4");
+    let expected = "een, twee, drieieieieieieieieieieieieieie";
+
+    assert_eq!( decoded, expected );
+}
+
+#[test]
+fn challenge4() {
+    let decoded = decode("31161d53001217161016531c1f170618b0d412530609061d531c1f121d53111a015310b0cf1e1f165f53b0d41c185300b0cf001fb0cf53111a01532c160a5314160116181a01");
+    let expected = "Ben sadece oldukça uzun olan bir cümle, çok süslü bir _ey gerekir";
+
+    assert_eq!( decoded, expected );
+}
+
+#[test]
+fn challenge5() {
+    let decoded = decode("231c07b6ea16110619065319161d5305b7e807065f5318071601b0d253191653171c0007120716b7fe1db7e853171f1c061bb0d25f531d1a10531e1c105315121d0712091a16");
+    let expected = "Potřebuju jen větu, která je dostatečně dlouhá, nic moc fantazie";
+
+    assert_eq!( decoded, expected );
+}
+
 fn decode(encoded: &str) -> String {
-    let english_freq_map = "etaoinshrdlcumwfgypbvkjxqz";
+    let en_freq_map = "etaoinshrdlcumwfgypbvkjxqz";
+
     let input = from_hex(encoded).unwrap();
-    decrypt_xor_single_byte_text(&english_freq_map, &input)
+    decrypt_xor_single_byte_text(&en_freq_map, &input).unwrap()
 }

@@ -3,8 +3,8 @@ use std::string::*;
 
 use charfreq::*;
 
-pub fn decrypt_xor_single_byte_text(ref_freq_order: &str, encrypted: &[u8]) -> String {
-    let decode_and_score = |data: &[u8]| -> Option<(usize,String)> {
+pub fn decrypt_xor_single_byte_text(ref_freq_order: &str, encrypted: &[u8]) -> Option<String> {
+    let decode_and_score = |data: &[u8]| -> Option<(u32,String)> {
         match str::from_utf8(data) {
             Ok(s) => {
                 if is_printable(s) {
@@ -31,14 +31,16 @@ fn is_printable(text: &str) -> bool {
     true
 }
 
-fn calculate_score(ref_freq_order: &str, text: &str) -> usize {
+fn calculate_score(ref_freq_order: &str, text: &str) -> u32 {
     let freq_map = build_char_freq_map(text);
     let freq_order = build_freq_order_string(&freq_map);
+
+    println!("  {}", text);
+    println!("  {}", freq_order);
 
     let mut score = 0;
 
     let range = 6;
-
 
     let most_frequent = &freq_order[0..range];
     for c in ref_freq_order[0..range].chars() {
@@ -57,30 +59,32 @@ fn calculate_score(ref_freq_order: &str, text: &str) -> usize {
     score
 }
 
-pub fn decrypt_xor_single_byte<F, R>(encrypted: &[u8], decode_and_score: F) -> R
-    where F: Fn(&[u8]) -> Option<(usize, R)> {
+pub fn decrypt_xor_single_byte<F, R>(encrypted: &[u8], decode_and_score: F) -> Option<R>
+    where F: Fn(&[u8]) -> Option<(u32, R)> {
     let mut best_value : Option<R> = Option::None;
-    let mut best_score = 0;
+    let mut best_score : Option<u32> =  Option::None;
 
     for b in 0..256 {
+        println!("Evaluating {}", b);
+
         let x = b as u8;
         let decrypted = xor(encrypted, x);
 
         match decode_and_score(&decrypted) {
             Some((score, value)) => {
-                if score > best_score {
+                if best_score.is_none() || score > best_score.unwrap() {
                     best_value = Option::Some(value);
-                    best_score = score;
+                    best_score = Option::Some(score);
                 }
             }
             None => {}
         }
     }
 
-    return best_value.unwrap();
+    return best_value;
 }
 
-fn xor(encrypted: &[u8], xor: u8) -> Vec<u8> {
+pub fn xor(encrypted: &[u8], xor: u8) -> Vec<u8> {
     let mut decrypted = Vec::<u8>::with_capacity(encrypted.len());
 
     for v in encrypted {
