@@ -35,9 +35,6 @@ fn calculate_score(ref_freq_order: &str, text: &str) -> u32 {
     let freq_map = build_char_freq_map(text);
     let freq_order = build_freq_order_string(&freq_map);
 
-    println!("  {}", text);
-    println!("  {}", freq_order);
-
     let mut score = 0;
 
     let range = 6;
@@ -65,8 +62,6 @@ pub fn decrypt_xor_single_byte<F, R>(encrypted: &[u8], decode_and_score: F) -> O
     let mut best_score : Option<u32> =  Option::None;
 
     for b in 0..256 {
-        println!("Evaluating {}", b);
-
         let x = b as u8;
         let decrypted = xor(encrypted, x);
 
