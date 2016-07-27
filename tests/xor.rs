@@ -1,15 +1,8 @@
 extern crate versleutelvriendjes;
 
+use versleutelvriendjes::charfreq::*;
 use versleutelvriendjes::hex::*;
-use versleutelvriendjes::xor_decrypt::*;
-
-#[test]
-fn exc3() {
-    let decoded = decode("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
-    let expected = "Cooking MC's like a pound of bacon";
-
-    assert_eq!( decoded, expected );
-}
+use versleutelvriendjes::xor::*;
 
 #[test]
 fn challenge1() {
@@ -52,8 +45,7 @@ fn challenge5() {
 }
 
 fn decode(encoded: &str) -> String {
-    let en_freq_map = "etaoinshrdlcumwfgypbvkjxqz";
-
     let input = from_hex(encoded).unwrap();
-    decrypt_xor_single_byte_text(&en_freq_map, &input).unwrap()
+    let (text,_) = decrypt_xor_single_byte_text(&input, score_english_text).unwrap();
+    text
 }

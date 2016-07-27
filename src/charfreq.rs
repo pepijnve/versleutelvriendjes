@@ -38,3 +38,48 @@ pub fn build_freq_order_string(freq_map: &BTreeMap<char, usize>) -> String {
 
     freq_order_string
 }
+
+static ENGLISH_CHAR_FREQUENCY_ORDER: &'static str = "etaoinshrdlcumwfgypbvkjxqz";
+
+pub fn score_english_text(text: &str) -> Option<u32> {
+    score_text(text, ENGLISH_CHAR_FREQUENCY_ORDER)
+}
+
+pub fn score_text(text: &str, ref_freq_order: &str) -> Option<u32> {
+    if !is_printable(text) {
+        return Option::None;
+    }
+
+    let freq_map = build_char_freq_map(text);
+    let freq_order = build_freq_order_string(&freq_map);
+
+    let mut score = 0;
+
+    let range = 6;
+
+    let most_frequent = &freq_order[0..range];
+    for c in ref_freq_order[0..range].chars() {
+        if most_frequent.contains(c) {
+            score += 1;
+        }
+    }
+
+    let least_frequent = &freq_order[freq_order.len() - range..freq_order.len() - 1];
+    for c in ref_freq_order[ref_freq_order.len() - range..ref_freq_order.len() - 1].chars() {
+        if least_frequent.contains(c) {
+            score += 1;
+        }
+    }
+
+    Option::Some(score)
+}
+
+fn is_printable(text: &str) -> bool {
+    for c in text.chars() {
+        if c.is_control() && c != '\n' && c != '\r' && c != '\t' {
+            return false;
+        }
+    }
+
+    true
+}
