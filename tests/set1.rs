@@ -53,7 +53,8 @@ fn challenge4() {
         let hex = line.unwrap();
         let input = hex::from_hex(&hex).unwrap();
         match xor::decrypt_xor_single_byte_text(&input, charfreq::score_english_text) {
-            Some((text,score)) => {
+            Some((text,_)) => {
+                let score = charfreq::score_english_text(&text).unwrap();
                 results.push((text, score));
             },
             None => {}
@@ -78,4 +79,27 @@ fn challenge5() {
     let hex = hex::to_hex(&encoded);
 
     assert_eq!(hex, "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f");
+}
+
+#[test]
+fn challenge6() {
+    let f = File::open("tests/set1challenge6.txt").unwrap();
+    let reader = BufReader::new(f);
+
+    let mut input = Vec::new();
+
+    for line in reader.lines() {
+        let base64 = line.unwrap();
+        let mut decoded : Vec<u8> = base64::from_base64(&base64).unwrap();
+        input.append(&mut decoded);
+    }
+
+    match xor::decrypt_xor_repeating_key_text(&input, charfreq::score_english_text) {
+        Some((text,_)) => {
+            assert_eq!(text, "bla");
+        }
+        _ => {
+            panic!("Failed to decode")
+        }
+    }
 }

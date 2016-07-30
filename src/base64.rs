@@ -119,3 +119,62 @@ pub fn to_base64(data: &[u8]) -> String {
         String::from_utf8_unchecked(chars)
     }
 }
+
+#[derive(Copy, Clone, Debug)]
+pub enum FromBase64Error {
+    /// The input contained a character not part of the hex format
+    InvalidBase64Character(char, usize),
+}
+
+pub fn from_base64(enc: &str) -> Result<Vec<u8>,FromBase64Error> {
+    let char_count = enc.len();
+    let byte_count = (char_count + 3) / 4 * 3;
+
+    let mut char_index = 0;
+    let mut buffer: u8 = 0;
+    let mut bytes = Vec::<u8>::with_capacity(byte_count);
+
+    for (idx,c) in enc.chars().enumerate() {
+        let c_val = c as u8;
+        let b = match c {
+            'A'...'Z' => (c_val - 'A' as u8),
+            'a'...'z' => (c_val - 'a' as u8) + 26,
+            '0'...'9' => (c_val - '0' as u8) + 52,
+            '+' => 62,
+            '/' => 63,
+            '=' => {
+                break;
+            },
+            _ => {
+                return Err(FromBase64Error::InvalidBase64Character(c,idx));
+            }
+        };
+
+        match char_index {
+            0 => {
+                buffer = b << 2;
+                char_index = 1;
+            }
+            1 => {
+                bytes.push(buffer | (b >> 4));
+                buffer = (b & 0xf) << 4;
+                char_index = 2;
+            }
+            2 => {
+                bytes.push(buffer | (b >> 2));
+                buffer = (b & 0x3) << 6;
+                char_index = 3;
+            }
+            3 => {
+                bytes.push(buffer | b);
+                buffer = 0;
+                char_index = 0;
+            }
+            _ => {
+                panic!("Internal error");
+            }
+        }
+    }
+
+    Ok(bytes.into_iter().collect())
+}
